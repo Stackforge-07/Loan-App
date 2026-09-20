@@ -42,22 +42,41 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Trust proxy for secure cookies on Railway / Heroku / Render HTTPS reverse proxies
+app.set('trust proxy', 1);
+
+// Resolve MongoDB connection string from various cloud provider variables
+const mongoUri =
+  process.env.MONGODB_URI ||
+  process.env.MONGO_URL ||
+  process.env.MONGODB_URL ||
+  process.env.MONGO_PRIVATE_URL ||
+  '';
+
 // Session configuration
-app.use(session({
+const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'arthsetu_fallback_secret',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI,
-    ttl: 24 * 60 * 60 // 1 day
-  }),
   cookie: {
     maxAge: 24 * 60 * 60 * 1000, // 1 day
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax'
   }
-}));
+};
+
+if (mongoUri) {
+  sessionConfig.store = MongoStore.create({
+    mongoUrl: mongoUri,
+    ttl: 24 * 60 * 60 // 1 day
+  });
+} else {
+  console.warn('⚠️  Warning: No MongoDB URI provided in environment. Running session in memory.');
+}
+
+app.use(session(sessionConfig));
+
 
 // Global middleware — make user & flash available to all views
 app.use(async (req, res, next) => {
@@ -107,9 +126,9 @@ const errorHandler = require('./middleware/errorHandler');
 app.use(errorHandler);
 
 // Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 ArthSetu running on http://localhost:${PORT}`);
+const PORT = process.env.PORT || 5050;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 ArthSetu running on http://0.0.0.0:${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 

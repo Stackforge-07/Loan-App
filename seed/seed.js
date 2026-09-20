@@ -21,7 +21,12 @@ const Installment = require('../models/Installment');
 const Repayment = require('../models/Repayment');
 const Notification = require('../models/Notification');
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI =
+  process.env.MONGODB_URI ||
+  process.env.MONGO_URL ||
+  process.env.MONGODB_URL ||
+  process.env.MONGO_PRIVATE_URL;
+
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September'];
 
