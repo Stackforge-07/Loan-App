@@ -10,7 +10,7 @@ const getMongoUri = () => {
   );
 };
 
-const connectDB = async () => {
+const connectDB = async (retries = 5, delayMs = 4000) => {
   const uri = getMongoUri();
   if (!uri) {
     console.error('\n❌ ========================================================');
@@ -24,12 +24,23 @@ const connectDB = async () => {
     process.exit(1);
   }
 
-  try {
-    const conn = await mongoose.connect(uri);
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error(`❌ MongoDB Connection Error: ${error.message}`);
-    process.exit(1);
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const conn = await mongoose.connect(uri, {
+        serverSelectionTimeoutMS: 8000
+      });
+      console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+      return conn;
+    } catch (error) {
+      console.error(`❌ MongoDB Connection Error (attempt ${attempt}/${retries}): ${error.message}`);
+      if (attempt < retries) {
+        console.log(`⏳ Retrying MongoDB connection in ${delayMs / 1000}s...`);
+        await new Promise((res) => setTimeout(res, delayMs));
+      } else {
+        console.error('❌ All MongoDB connection attempts failed. Check Atlas IP whitelist (0.0.0.0/0).');
+        process.exit(1);
+      }
+    }
   }
 };
 
