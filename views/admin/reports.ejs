@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <% const activePage = 'reports'; %>
+    <%- include('../partials/sidebar-admin') %>
+    <main class="dashboard-main">
+      <% const pageTitle = 'Reports'; %>
+      <%- include('../partials/dashboard-header') %>
+      <div class="dashboard-content">
+        <!-- Report Type Selection -->
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Generate Report</h2></div>
+          <form action="/admin/reports" method="GET" class="form-vertical">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="reportType">Report Type</label>
+                <select id="reportType" name="reportType" required>
+                  <option value="">-- Select Report --</option>
+                  <option value="savings" <%= reportType === 'savings' ? 'selected' : '' %>>Monthly Savings Report</option>
+                  <option value="loans" <%= reportType === 'loans' ? 'selected' : '' %>>Loan Disbursement Report</option>
+                  <option value="repayments" <%= reportType === 'repayments' ? 'selected' : '' %>>Repayment Report</option>
+                  <option value="outstanding" <%= reportType === 'outstanding' ? 'selected' : '' %>>Outstanding Loan Report</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="memberId">Filter by Member</label>
+                <select id="memberId" name="memberId">
+                  <option value="">All Members</option>
+                  <% members.forEach(m => { %>
+                    <option value="<%= m._id %>" <%= memberId === String(m._id) ? 'selected' : '' %>><%= m.name %></option>
+                  <% }); %>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="startDate">Start Date</label>
+                <input type="date" id="startDate" name="startDate" value="<%= startDate %>">
+              </div>
+              <div class="form-group">
+                <label for="endDate">End Date</label>
+                <input type="date" id="endDate" name="endDate" value="<%= endDate %>">
+              </div>
+            </div>
+            <div class="action-btns">
+              <button type="submit" class="btn btn-primary btn-sm">Generate Report</button>
+              <% if (reportType) { %>
+                <a href="/admin/reports/export?reportType=<%= reportType %>" class="btn btn-outline btn-sm">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Export CSV
+                </a>
+              <% } %>
+            </div>
+          </form>
+        </div>
+
+        <!-- Report Results -->
+        <% if (reportData) { %>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title"><%= reportType.charAt(0).toUpperCase() + reportType.slice(1) %> Report</h2>
+            <span class="text-muted"><%= reportData.length %> records</span>
+          </div>
+          <% if (reportData.length > 0) { %>
+            <div class="table-responsive">
+              <% if (reportType === 'savings') { %>
+              <table class="table">
+                <thead><tr><th>Date</th><th>Member</th><th>Month</th><th>Year</th><th>Amount</th><th>Balance</th></tr></thead>
+                <tbody>
+                  <% reportData.forEach(d => { %>
+                  <tr>
+                    <td><%= new Date(d.date).toLocaleDateString('en-IN') %></td>
+                    <td><%= d.memberId ? d.memberId.name : '—' %></td>
+                    <td><%= d.month %></td>
+                    <td><%= d.year %></td>
+                    <td class="text-success">₹<%= d.amount.toLocaleString('en-IN') %></td>
+                    <td>₹<%= d.runningBalance.toLocaleString('en-IN') %></td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+              <% } else if (reportType === 'loans') { %>
+              <table class="table">
+                <thead><tr><th>Loan ID</th><th>Member</th><th>Principal</th><th>Rate</th><th>Total</th><th>Paid</th><th>Outstanding</th><th>Status</th></tr></thead>
+                <tbody>
+                  <% reportData.forEach(d => { %>
+                  <tr>
+                    <td><%= d.loanId %></td>
+                    <td><%= d.memberId ? d.memberId.name : '—' %></td>
+                    <td>₹<%= d.principalAmount.toLocaleString('en-IN') %></td>
+                    <td><%= d.interestRate %>%</td>
+                    <td>₹<%= d.totalPayable.toLocaleString('en-IN') %></td>
+                    <td class="text-success">₹<%= d.amountPaid.toLocaleString('en-IN') %></td>
+                    <td class="text-warning">₹<%= d.outstandingBalance.toLocaleString('en-IN') %></td>
+                    <td><span class="badge badge-<%= d.status === 'completed' ? 'success' : d.status === 'rejected' ? 'error' : 'warning' %>"><%= d.status.replace(/_/g,' ') %></span></td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+              <% } else if (reportType === 'repayments') { %>
+              <table class="table">
+                <thead><tr><th>Date</th><th>Member</th><th>Loan</th><th>Amount</th><th>Method</th></tr></thead>
+                <tbody>
+                  <% reportData.forEach(d => { %>
+                  <tr>
+                    <td><%= new Date(d.paymentDate).toLocaleDateString('en-IN') %></td>
+                    <td><%= d.memberId ? d.memberId.name : '—' %></td>
+                    <td><%= d.loanId ? d.loanId.loanId : '—' %></td>
+                    <td class="text-success">₹<%= d.amount.toLocaleString('en-IN') %></td>
+                    <td><%= d.paymentMethod.replace(/_/g,' ') %></td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+              <% } else if (reportType === 'outstanding') { %>
+              <table class="table">
+                <thead><tr><th>Loan ID</th><th>Member</th><th>Principal</th><th>Total Payable</th><th>Paid</th><th>Outstanding</th><th>Status</th></tr></thead>
+                <tbody>
+                  <% reportData.forEach(d => { %>
+                  <tr>
+                    <td><%= d.loanId %></td>
+                    <td><%= d.memberId ? d.memberId.name : '—' %></td>
+                    <td>₹<%= d.principalAmount.toLocaleString('en-IN') %></td>
+                    <td>₹<%= d.totalPayable.toLocaleString('en-IN') %></td>
+                    <td class="text-success">₹<%= d.amountPaid.toLocaleString('en-IN') %></td>
+                    <td class="text-warning">₹<%= d.outstandingBalance.toLocaleString('en-IN') %></td>
+                    <td><span class="badge badge-warning"><%= d.status.replace(/_/g,' ') %></span></td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+              <% } %>
+            </div>
+          <% } else { %>
+            <div class="empty-state"><p>No records found for the selected criteria.</p></div>
+          <% } %>
+        </div>
+        <% } %>
+      </div>
+    </main>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

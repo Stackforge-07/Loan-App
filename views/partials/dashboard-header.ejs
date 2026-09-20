@@ -1,0 +1,26 @@
+<!-- Dashboard Header -->
+<header class="dashboard-header">
+  <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="header-left">
+    <h1 class="page-title"><%= typeof pageTitle !== 'undefined' ? pageTitle : 'Dashboard' %></h1>
+  </div>
+  <div class="header-right">
+    <a href="<%= currentUser.role === 'admin' ? '/admin/notifications' : '/member/notifications' %>" class="header-icon notification-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <% if (typeof unreadCount !== 'undefined' && unreadCount > 0) { %>
+        <span class="notification-badge"><%= unreadCount %></span>
+      <% } %>
+    </a>
+    <div class="header-profile">
+      <div class="header-avatar"><%= currentUser.name.charAt(0).toUpperCase() %></div>
+      <div class="header-user-info">
+        <span class="header-user-name"><%= currentUser.name %></span>
+        <span class="header-user-role"><%= currentUser.role === 'admin' ? 'Group Leader' : 'Member' %></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<%- include('toast') %>

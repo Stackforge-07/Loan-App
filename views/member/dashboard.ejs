@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <% const activePage = 'dashboard'; %>
+    <%- include('../partials/sidebar-member') %>
+    <main class="dashboard-main">
+      <% const pageTitle = 'Dashboard'; %>
+      <%- include('../partials/dashboard-header') %>
+      <div class="dashboard-content">
+        <!-- Stat Cards -->
+        <div class="stat-grid">
+          <div class="stat-card stat-card-green">
+            <div class="stat-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="stat-card-content">
+              <p class="stat-card-label">Total Savings</p>
+              <h3 class="stat-card-value">₹<%= totalSavings.toLocaleString('en-IN') %></h3>
+            </div>
+          </div>
+          <div class="stat-card stat-card-blue">
+            <div class="stat-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+            <div class="stat-card-content">
+              <p class="stat-card-label">Current Loan</p>
+              <h3 class="stat-card-value">₹<%= currentLoanAmount.toLocaleString('en-IN') %></h3>
+            </div>
+          </div>
+          <div class="stat-card stat-card-amber">
+            <div class="stat-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="stat-card-content">
+              <p class="stat-card-label">Outstanding</p>
+              <h3 class="stat-card-value">₹<%= outstandingBalance.toLocaleString('en-IN') %></h3>
+            </div>
+          </div>
+          <div class="stat-card stat-card-purple">
+            <div class="stat-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div class="stat-card-content">
+              <p class="stat-card-label">Next Installment</p>
+              <h3 class="stat-card-value">
+                <% if (nextInstallment) { %>
+                  ₹<%= nextInstallment.amount.toLocaleString('en-IN') %>
+                <% } else { %>
+                  —
+                <% } %>
+              </h3>
+              <% if (nextInstallment) { %>
+                <p class="stat-card-meta">Due: <%= new Date(nextInstallment.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Quick Actions</h2>
+          </div>
+          <div class="quick-actions">
+            <a href="/member/savings" class="quick-action">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <span>View Passbook</span>
+            </a>
+            <a href="/member/loans/request" class="quick-action">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              <span>Request Loan</span>
+            </a>
+            <a href="/member/loans" class="quick-action">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              <span>My Loans</span>
+            </a>
+            <a href="/member/repayments" class="quick-action">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              <span>Repayments</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Recent Savings -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Recent Savings</h2>
+            <a href="/member/savings" class="card-link">View All →</a>
+          </div>
+          <% if (recentSavings.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>Amount</th>
+                    <th>Running Balance</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% recentSavings.forEach(s => { %>
+                  <tr>
+                    <td><%= s.month %> <%= s.year %></td>
+                    <td class="text-success">₹<%= s.amount.toLocaleString('en-IN') %></td>
+                    <td>₹<%= s.runningBalance.toLocaleString('en-IN') %></td>
+                    <td><%= new Date(s.date).toLocaleDateString('en-IN') %></td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <p>No savings records yet.</p>
+              <span>Your savings contributions will appear here.</span>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Recent Notifications -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Recent Notifications</h2>
+            <a href="/member/notifications" class="card-link">View All →</a>
+          </div>
+          <% if (recentNotifications.length > 0) { %>
+            <div class="notification-list">
+              <% recentNotifications.forEach(n => { %>
+              <div class="notification-item <%= n.isRead ? '' : 'unread' %>">
+                <div class="notification-dot notification-dot-<%= n.type %>"></div>
+                <div class="notification-content">
+                  <p class="notification-title"><%= n.title %></p>
+                  <p class="notification-message"><%= n.message %></p>
+                  <span class="notification-time"><%= new Date(n.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) %></span>
+                </div>
+              </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <p>No notifications yet.</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <% const activePage = 'loans'; %>
+    <%- include('../partials/sidebar-admin') %>
+    <main class="dashboard-main">
+      <% const pageTitle = 'Loan ' + loan.loanId; %>
+      <%- include('../partials/dashboard-header') %>
+      <div class="dashboard-content">
+        <a href="/admin/loans" class="btn btn-outline btn-sm" style="margin-bottom: 1.5rem;">← Back to Loans</a>
+
+        <!-- Loan Summary -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title"><%= loan.loanId %></h2>
+            <span class="badge badge-<%= loan.status === 'completed' ? 'success' : loan.status === 'rejected' ? 'error' : loan.status === 'requested' ? 'info' : 'warning' %> badge-lg">
+              <%= loan.status.replace(/_/g, ' ') %>
+            </span>
+          </div>
+          <div class="detail-grid">
+            <div class="detail-item"><span class="detail-label">Member</span><span class="detail-value"><%= loan.memberId ? loan.memberId.name : '—' %></span></div>
+            <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value"><%= loan.memberId ? loan.memberId.email : '—' %></span></div>
+            <div class="detail-item"><span class="detail-label">Principal</span><span class="detail-value">₹<%= loan.principalAmount.toLocaleString('en-IN') %></span></div>
+            <div class="detail-item"><span class="detail-label">Interest Rate</span><span class="detail-value"><%= loan.interestRate %>% p.a.</span></div>
+            <div class="detail-item"><span class="detail-label">Tenure</span><span class="detail-value"><%= loan.tenure %> months</span></div>
+            <div class="detail-item"><span class="detail-label">Total Payable</span><span class="detail-value">₹<%= loan.totalPayable.toLocaleString('en-IN') %></span></div>
+            <div class="detail-item"><span class="detail-label">Amount Paid</span><span class="detail-value text-success">₹<%= loan.amountPaid.toLocaleString('en-IN') %></span></div>
+            <div class="detail-item"><span class="detail-label">Outstanding</span><span class="detail-value text-warning">₹<%= loan.outstandingBalance.toLocaleString('en-IN') %></span></div>
+            <div class="detail-item"><span class="detail-label">Purpose</span><span class="detail-value"><%= loan.purpose.charAt(0).toUpperCase() + loan.purpose.slice(1) %></span></div>
+            <div class="detail-item"><span class="detail-label">Requested</span><span class="detail-value"><%= new Date(loan.requestedAt).toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'}) %></span></div>
+            <% if (loan.notes) { %>
+            <div class="detail-item detail-full"><span class="detail-label">Notes</span><span class="detail-value"><%= loan.notes %></span></div>
+            <% } %>
+            <% if (loan.rejectionReason) { %>
+            <div class="detail-item detail-full"><span class="detail-label">Rejection Reason</span><span class="detail-value text-error"><%= loan.rejectionReason %></span></div>
+            <% } %>
+          </div>
+
+          <% if (['active','partially_paid','disbursed'].includes(loan.status)) { %>
+          <div class="loan-progress" style="margin-top: 1.5rem;">
+            <div class="loan-progress-bar">
+              <div class="loan-progress-fill" style="width: <%= loan.totalPayable > 0 ? Math.round((loan.amountPaid / loan.totalPayable) * 100) : 0 %>%"></div>
+            </div>
+            <div class="loan-progress-labels"><span><%= loan.totalPayable > 0 ? Math.round((loan.amountPaid / loan.totalPayable) * 100) : 0 %>% repaid</span></div>
+          </div>
+          <% } %>
+        </div>
+
+        <!-- Action Buttons -->
+        <% if (loan.status === 'requested') { %>
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Review Loan</h2></div>
+          <div class="action-cards">
+            <form action="/admin/loans/<%= loan._id %>/status" method="POST" class="action-form">
+              <input type="hidden" name="action" value="approve">
+              <div class="form-group">
+                <label for="interestRate">Interest Rate (% p.a.) — optional, default 0%</label>
+                <input type="number" id="interestRate" name="interestRate" min="0" max="36" step="0.5" value="<%= loan.interestRate %>" placeholder="e.g., 5">
+              </div>
+              <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to approve this loan?')">✓ Approve Loan</button>
+            </form>
+            <form action="/admin/loans/<%= loan._id %>/status" method="POST" class="action-form">
+              <input type="hidden" name="action" value="reject">
+              <div class="form-group">
+                <label for="rejectionReason">Rejection Reason *</label>
+                <textarea id="rejectionReason" name="rejectionReason" rows="2" placeholder="Provide a reason for rejection" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to reject this loan?')">✕ Reject Loan</button>
+            </form>
+          </div>
+        </div>
+        <% } %>
+
+        <% if (loan.status === 'approved') { %>
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Disburse Loan</h2></div>
+          <p style="margin-bottom: 1rem;">Disbursing this loan will auto-generate an installment schedule of <%= loan.tenure %> monthly installments.</p>
+          <form action="/admin/loans/<%= loan._id %>/status" method="POST">
+            <input type="hidden" name="action" value="disburse">
+            <button type="submit" class="btn btn-primary" onclick="return confirm('Disburse ₹<%= loan.principalAmount.toLocaleString('en-IN') %> and generate installment schedule?')">💰 Disburse Loan</button>
+          </form>
+        </div>
+        <% } %>
+
+        <!-- Installment Schedule -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Installment Schedule</h2>
+            <% if (installments.length > 0) { %>
+              <span class="text-muted"><%= installments.filter(i => i.status === 'paid').length %>/<%= installments.length %> paid</span>
+            <% } %>
+          </div>
+          <% if (installments.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table">
+                <thead><tr><th>#</th><th>Due Date</th><th>Amount</th><th>Paid</th><th>Status</th><th>Paid On</th></tr></thead>
+                <tbody>
+                  <% installments.forEach(inst => { %>
+                  <tr class="<%= inst.status === 'overdue' ? 'row-overdue' : '' %>">
+                    <td><%= inst.installmentNumber %></td>
+                    <td><%= new Date(inst.dueDate).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}) %></td>
+                    <td>₹<%= inst.amount.toLocaleString('en-IN') %></td>
+                    <td>₹<%= inst.paidAmount.toLocaleString('en-IN') %></td>
+                    <td><span class="badge badge-<%= inst.status === 'paid' ? 'success' : inst.status === 'overdue' ? 'error' : inst.status === 'partially_paid' ? 'warning' : 'default' %>"><%= inst.status.replace(/_/g, ' ') %></span></td>
+                    <td><%= inst.paidAt ? new Date(inst.paidAt).toLocaleDateString('en-IN') : '—' %></td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="empty-state"><p>No installment schedule yet.</p><span>Schedule will be generated upon disbursement.</span></div>
+          <% } %>
+        </div>
+
+        <!-- Repayment History -->
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Repayment History</h2></div>
+          <% if (repayments.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table">
+                <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Recorded By</th><th>Notes</th></tr></thead>
+                <tbody>
+                  <% repayments.forEach(r => { %>
+                  <tr>
+                    <td><%= new Date(r.paymentDate).toLocaleDateString('en-IN') %></td>
+                    <td class="text-success">₹<%= r.amount.toLocaleString('en-IN') %></td>
+                    <td><%= r.paymentMethod.replace(/_/g, ' ') %></td>
+                    <td><%= r.recordedBy ? r.recordedBy.name : '—' %></td>
+                    <td><%= r.notes || '—' %></td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="empty-state"><p>No repayments recorded.</p></div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

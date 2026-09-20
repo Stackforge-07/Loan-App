@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Register on ArthSetu — Self-Help Group Savings & Micro-Loan Tracker">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body class="auth-page">
+  <div class="auth-container">
+    <div class="auth-left">
+      <div class="auth-brand">
+        <a href="/">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          <span>ArthSetu</span>
+        </a>
+      </div>
+      <div class="auth-illustration">
+        <h2>Join ArthSetu</h2>
+        <p>Create your account and start managing your group's finances digitally.</p>
+        <div class="auth-features">
+          <div class="auth-feature">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Create or join a Self-Help Group</span>
+          </div>
+          <div class="auth-feature">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Record savings & track loans</span>
+          </div>
+          <div class="auth-feature">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Secure & transparent</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-form-container">
+        <h1>Create Account</h1>
+        <p class="auth-subtitle">Fill in the details below to register</p>
+
+        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+          <div class="alert alert-error">
+            <% errors.forEach(err => { %>
+              <p><%= err.msg %></p>
+            <% }); %>
+          </div>
+        <% } %>
+
+        <form action="/register" method="POST" class="auth-form" id="register-form">
+          <!-- Role selector -->
+          <div class="form-group">
+            <label>I am a</label>
+            <div class="role-selector">
+              <label class="role-option">
+                <input type="radio" name="role" value="member" <%= (typeof body === 'undefined' || !body.role || body.role === 'member') ? 'checked' : '' %>>
+                <div class="role-card">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <span>Member</span>
+                </div>
+              </label>
+              <label class="role-option">
+                <input type="radio" name="role" value="admin" <%= (typeof body !== 'undefined' && body.role === 'admin') ? 'checked' : '' %>>
+                <div class="role-card">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span>Group Leader</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" name="name" placeholder="Enter your full name" value="<%= typeof body !== 'undefined' ? body.name || '' : '' %>" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" placeholder="you@example.com" value="<%= typeof body !== 'undefined' ? body.email || '' : '' %>" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="Enter phone number" value="<%= typeof body !== 'undefined' ? body.phone || '' : '' %>" required>
+            </div>
+            <div class="form-group">
+              <label for="address">Address</label>
+              <input type="text" id="address" name="address" placeholder="Village / Town" value="<%= typeof body !== 'undefined' ? body.address || '' : '' %>">
+            </div>
+          </div>
+
+          <!-- Member-specific fields -->
+          <div id="member-fields">
+            <div class="form-group">
+              <label for="groupId">Select Group</label>
+              <select id="groupId" name="groupId">
+                <option value="">-- Select a group --</option>
+                <% if (typeof groups !== 'undefined') { %>
+                  <% groups.forEach(g => { %>
+                    <option value="<%= g._id %>" <%= (typeof body !== 'undefined' && body.groupId === String(g._id)) ? 'selected' : '' %>><%= g.name %> (<%= g.groupId %>)</option>
+                  <% }); %>
+                <% } %>
+              </select>
+            </div>
+          </div>
+
+          <!-- Admin-specific fields -->
+          <div id="admin-fields" style="display: none;">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="groupName">Group Name</label>
+                <input type="text" id="groupName" name="groupName" placeholder="e.g., Shakti Self-Help Group" value="<%= typeof body !== 'undefined' ? body.groupName || '' : '' %>">
+              </div>
+              <div class="form-group">
+                <label for="location">Group Location</label>
+                <input type="text" id="location" name="location" placeholder="Village / District" value="<%= typeof body !== 'undefined' ? body.location || '' : '' %>">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="description">Group Description</label>
+              <textarea id="description" name="description" placeholder="Brief description of the group" rows="2"><%= typeof body !== 'undefined' ? body.description || '' : '' %></textarea>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" placeholder="Min. 6 characters" required>
+            </div>
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password</label>
+              <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full" id="register-btn">
+            <span>Create Account</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </form>
+        <p class="auth-switch">Already have an account? <a href="/login">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+  <script src="/js/main.js"></script>
+  <script>
+    // Toggle role fields
+    document.querySelectorAll('input[name="role"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        document.getElementById('member-fields').style.display = this.value === 'member' ? 'block' : 'none';
+        document.getElementById('admin-fields').style.display = this.value === 'admin' ? 'block' : 'none';
+      });
+    });
+    // Init
+    const checkedRole = document.querySelector('input[name="role"]:checked');
+    if (checkedRole) {
+      document.getElementById('member-fields').style.display = checkedRole.value === 'member' ? 'block' : 'none';
+      document.getElementById('admin-fields').style.display = checkedRole.value === 'admin' ? 'block' : 'none';
+    }
+  </script>
+</body>
+</html>

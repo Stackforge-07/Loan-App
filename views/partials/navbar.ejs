@@ -1,0 +1,34 @@
+<!-- Public Navbar -->
+<nav class="navbar" id="main-navbar">
+  <div class="navbar-container">
+    <a href="/" class="navbar-brand">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+      <span>ArthSetu</span>
+    </a>
+    <button class="navbar-toggle" id="navbar-toggle" aria-label="Toggle navigation">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="navbar-nav" id="navbar-nav">
+      <li><a href="/" class="nav-link">Home</a></li>
+      <li><a href="/#how-it-works" class="nav-link">How It Works</a></li>
+      <li><a href="/#features" class="nav-link">Features</a></li>
+      <li><a href="/#about" class="nav-link">About</a></li>
+      <% if (currentUser) { %>
+        <li>
+          <a href="<%= currentUser.role === 'admin' ? '/admin/dashboard' : '/member/dashboard' %>" class="nav-link btn-nav-outline">
+            Dashboard
+          </a>
+        </li>
+      <% } else { %>
+        <li><a href="/login" class="nav-link">Login</a></li>
+        <li><a href="/register" class="nav-link btn-nav-primary">Register</a></li>
+      <% } %>
+    </ul>
+  </div>
+</nav>

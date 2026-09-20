@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ArthSetu helps self-help groups digitally manage member savings, loans, repayments and financial records in one simple platform.">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body class="landing-page">
+  <%- include('partials/navbar') %>
+  <%- include('partials/toast') %>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">🏦 Self-Help Group Finance Platform</div>
+        <h1 class="hero-title">Transparent Savings.<br><span class="hero-title-accent">Smarter Group Finance.</span></h1>
+        <p class="hero-subtitle">ArthSetu helps self-help groups digitally manage member savings, loans, repayments and financial records in one simple platform.</p>
+        <div class="hero-actions">
+          <a href="/register" class="btn btn-primary btn-lg">
+            Get Started
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a href="#features" class="btn btn-outline btn-lg">Explore Features</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-dashboard-card">
+          <div class="hero-card-header">
+            <div class="hero-card-dot"></div>
+            <div class="hero-card-dot"></div>
+            <div class="hero-card-dot"></div>
+          </div>
+          <div class="hero-mini-cards">
+            <div class="hero-mini-card hmc-savings">
+              <span class="hmc-icon">💰</span>
+              <span class="hmc-label">Total Savings</span>
+              <span class="hmc-value">₹1,25,000</span>
+            </div>
+            <div class="hero-mini-card hmc-loans">
+              <span class="hmc-icon">📋</span>
+              <span class="hmc-label">Active Loans</span>
+              <span class="hmc-value">₹45,000</span>
+            </div>
+            <div class="hero-mini-card hmc-repayments">
+              <span class="hmc-icon">✅</span>
+              <span class="hmc-label">Recovered</span>
+              <span class="hmc-value">₹32,000</span>
+            </div>
+            <div class="hero-mini-card hmc-balance">
+              <span class="hmc-icon">📊</span>
+              <span class="hmc-label">Group Fund</span>
+              <span class="hmc-value">₹1,12,000</span>
+            </div>
+          </div>
+          <div class="hero-flow">
+            <div class="flow-step"><span>Members</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><span>Savings</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step flow-highlight"><span>Group Fund</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><span>Loans</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step"><span>Repayments</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="section how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">How It Works</span>
+        <h2 class="section-title">Simple Steps to Financial Transparency</h2>
+        <p class="section-subtitle">ArthSetu makes group finance management easy with a clear, step-by-step process.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-icon">👥</div>
+          <h3>Create Your Group</h3>
+          <p>Register as a Group Leader, create your Self-Help Group, and invite members to join.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-icon">💰</div>
+          <h3>Record Savings</h3>
+          <p>Track monthly contributions from each member. Every transaction is recorded with full transparency.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-icon">📋</div>
+          <h3>Manage Loans</h3>
+          <p>Members request loans, leaders approve or review, and installment schedules are auto-generated.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <div class="step-icon">📊</div>
+          <h3>Track Everything</h3>
+          <p>Monitor repayments, view dashboards, generate reports, and keep your group finances organized.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section features" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Features</span>
+        <h2 class="section-title">Everything Your Group Needs</h2>
+        <p class="section-subtitle">Comprehensive tools designed for transparent self-help group finance management.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-green">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <h3>Digital Savings Passbook</h3>
+          <p>Every member gets a digital passbook showing their contribution history, running balance, and monthly records.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-blue">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </div>
+          <h3>Loan Management</h3>
+          <p>Complete loan lifecycle — from request to approval, disbursement, installment tracking, and completion.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-purple">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <h3>Repayment Tracking</h3>
+          <p>Auto-generated installment schedules, repayment recording, and real-time outstanding balance calculations.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-amber">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </div>
+          <h3>Financial Dashboard</h3>
+          <p>Visual charts and real-time statistics showing group savings, loan distribution, and collection trends.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-red">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <h3>Reports & Export</h3>
+          <p>Generate savings, loan, and repayment reports. Filter by date or member and export to CSV.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-teal">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>Secure & Role-Based</h3>
+          <p>Encrypted passwords, session auth, and role-based access. Members see only their data; leaders manage the group.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section about" id="about">
+    <div class="container">
+      <div class="about-content">
+        <div class="about-text">
+          <span class="section-badge">About ArthSetu</span>
+          <h2 class="section-title">Bridging the Gap in Group Finance</h2>
+          <p>"ArthSetu" means "Bridge of Finance" — connecting Self-Help Group members with transparent, digital financial management.</p>
+          <p>Many self-help groups still rely on paper registers and manual calculations. ArthSetu digitizes this process, making it easier for group leaders and members to track savings, manage loans, and maintain accurate financial records.</p>
+          <div class="about-highlights">
+            <div class="about-highlight">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Built for simplicity and accessibility</span>
+            </div>
+            <div class="about-highlight">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Real-time financial tracking</span>
+            </div>
+            <div class="about-highlight">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Transparent group records</span>
+            </div>
+            <div class="about-highlight">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Mobile-friendly interface</span>
+            </div>
+          </div>
+        </div>
+        <div class="about-visual">
+          <div class="about-card">
+            <div class="about-card-icon">🌉</div>
+            <h3>Arth = Finance</h3>
+            <p>Managing money matters with clarity</p>
+          </div>
+          <div class="about-card">
+            <div class="about-card-icon">🔗</div>
+            <h3>Setu = Bridge</h3>
+            <p>Connecting groups to digital finance</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section cta-section">
+    <div class="container">
+      <div class="cta-card">
+        <h2>Ready to Modernize Your Group's Finances?</h2>
+        <p>Join ArthSetu and start managing savings, loans, and repayments digitally.</p>
+        <div class="cta-actions">
+          <a href="/register" class="btn btn-primary btn-lg">Create Your Group</a>
+          <a href="/login" class="btn btn-outline-white btn-lg">Sign In</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

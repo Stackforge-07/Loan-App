@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <% const activePage = 'members'; %>
+    <%- include('../partials/sidebar-admin') %>
+    <main class="dashboard-main">
+      <% const pageTitle = 'Members'; %>
+      <%- include('../partials/dashboard-header') %>
+      <div class="dashboard-content">
+        <!-- Search & Filter -->
+        <div class="card">
+          <form action="/admin/members" method="GET" class="filter-form">
+            <div class="filter-row">
+              <input type="text" name="search" placeholder="Search by name, email or phone..." value="<%= search %>" class="filter-input">
+              <select name="status">
+                <option value="">All Status</option>
+                <option value="active" <%= filterStatus === 'active' ? 'selected' : '' %>>Active</option>
+                <option value="inactive" <%= filterStatus === 'inactive' ? 'selected' : '' %>>Inactive</option>
+              </select>
+              <button type="submit" class="btn btn-primary btn-sm">Search</button>
+              <a href="/admin/members" class="btn btn-outline btn-sm">Clear</a>
+            </div>
+          </form>
+        </div>
+
+        <!-- Members Table -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">All Members (<%= total %>)</h2>
+          </div>
+          <% if (members.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Joined</th>
+                    <th>Savings</th>
+                    <th>Current Loan</th>
+                    <th>Outstanding</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% members.forEach(m => { %>
+                  <tr>
+                    <td><strong><%= m.name %></strong></td>
+                    <td><%= m.email %></td>
+                    <td><%= m.phone %></td>
+                    <td><%= new Date(m.joinDate).toLocaleDateString('en-IN') %></td>
+                    <td class="text-success">₹<%= m.totalSavings.toLocaleString('en-IN') %></td>
+                    <td>₹<%= m.currentLoan.toLocaleString('en-IN') %></td>
+                    <td class="<%= m.outstandingBalance > 0 ? 'text-warning' : '' %>">₹<%= m.outstandingBalance.toLocaleString('en-IN') %></td>
+                    <td><span class="badge badge-<%= m.status === 'active' ? 'success' : 'error' %>"><%= m.status %></span></td>
+                    <td>
+                      <div class="action-btns">
+                        <a href="/admin/members/<%= m._id %>" class="btn btn-outline btn-xs">View</a>
+                        <form action="/admin/members/<%= m._id %>/toggle-status" method="POST" style="display:inline; margin:0;">
+                          <button type="submit" class="btn btn-xs <%= m.status === 'active' ? 'btn-danger-outline' : 'btn-success-outline' %>" onclick="return confirm('Are you sure you want to <%= m.status === 'active' ? 'deactivate' : 'activate' %> this member?')">
+                            <%= m.status === 'active' ? 'Deactivate' : 'Activate' %>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination -->
+            <% if (totalPages > 1) { %>
+            <div class="pagination">
+              <% if (currentPage > 1) { %>
+                <a href="/admin/members?page=<%= currentPage - 1 %>&search=<%= search %>&status=<%= filterStatus %>" class="pagination-btn">← Previous</a>
+              <% } %>
+              <span class="pagination-info">Page <%= currentPage %> of <%= totalPages %></span>
+              <% if (currentPage < totalPages) { %>
+                <a href="/admin/members?page=<%= currentPage + 1 %>&search=<%= search %>&status=<%= filterStatus %>" class="pagination-btn">Next →</a>
+              <% } %>
+            </div>
+            <% } %>
+          <% } else { %>
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <p>No members found.</p>
+              <span>Members will appear here once they register.</span>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

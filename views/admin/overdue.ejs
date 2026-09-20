@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <% const activePage = 'overdue'; %>
+    <%- include('../partials/sidebar-admin') %>
+    <main class="dashboard-main">
+      <% const pageTitle = 'Overdue Repayments'; %>
+      <%- include('../partials/dashboard-header') %>
+      <div class="dashboard-content">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Overdue Installments</h2>
+            <% if (overdueInstallments.length > 0) { %>
+              <span class="badge badge-error"><%= overdueInstallments.length %> overdue</span>
+            <% } %>
+          </div>
+          <% if (overdueInstallments.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Loan ID</th>
+                    <th>Installment #</th>
+                    <th>Due Date</th>
+                    <th>Amount</th>
+                    <th>Days Overdue</th>
+                    <th>Outstanding</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% overdueInstallments.forEach(inst => { %>
+                  <tr class="row-overdue">
+                    <td><strong><%= inst.memberId ? inst.memberId.name : '—' %></strong>
+                      <br><small class="text-muted"><%= inst.memberId ? inst.memberId.phone : '' %></small>
+                    </td>
+                    <td><%= inst.loanId ? inst.loanId.loanId : '—' %></td>
+                    <td>#<%= inst.installmentNumber %></td>
+                    <td><%= new Date(inst.dueDate).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}) %></td>
+                    <td>₹<%= inst.amount.toLocaleString('en-IN') %></td>
+                    <td><span class="overdue-days"><%= inst.daysOverdue %> days</span></td>
+                    <td class="text-warning">₹<%= inst.loanId ? inst.loanId.outstandingBalance.toLocaleString('en-IN') : '—' %></td>
+                    <td><span class="badge badge-error">Overdue</span></td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="empty-state empty-state-success">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <p>No overdue installments!</p>
+              <span>All repayments are up to date. Great work!</span>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

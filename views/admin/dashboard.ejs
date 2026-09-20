@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="dashboard-layout">
+    <% const activePage = 'dashboard'; %>
+    <%- include('../partials/sidebar-admin') %>
+    <main class="dashboard-main">
+      <% const pageTitle = 'Admin Dashboard'; %>
+      <%- include('../partials/dashboard-header') %>
+      <div class="dashboard-content">
+        <!-- Stat Cards -->
+        <div class="stat-grid stat-grid-3">
+          <div class="stat-card stat-card-green">
+            <div class="stat-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="stat-card-content">
+              <p class="stat-card-label">Total Members</p>
+              <h3 class="stat-card-value"><%= totalMembers %></h3>
+            </div>
+          </div>
+          <div class="stat-card stat-card-blue">
+            <div class="stat-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="stat-card-content">
+              <p class="stat-card-label">Group Savings</p>
+              <h3 class="stat-card-value">₹<%= totalGroupSavings.toLocaleString('en-IN') %></h3>
+            </div>
+          </div>
+          <div class="stat-card stat-card-purple">
+            <div class="stat-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+            <div class="stat-card-content">
+              <p class="stat-card-label">Loans Disbursed</p>
+              <h3 class="stat-card-value">₹<%= loansDisbursed.toLocaleString('en-IN') %></h3>
+            </div>
+          </div>
+          <div class="stat-card stat-card-teal">
+            <div class="stat-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            <div class="stat-card-content">
+              <p class="stat-card-label">Amount Recovered</p>
+              <h3 class="stat-card-value">₹<%= amountRecovered.toLocaleString('en-IN') %></h3>
+            </div>
+          </div>
+          <div class="stat-card stat-card-amber">
+            <div class="stat-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="stat-card-content">
+              <p class="stat-card-label">Outstanding Loans</p>
+              <h3 class="stat-card-value">₹<%= outstandingLoans.toLocaleString('en-IN') %></h3>
+            </div>
+          </div>
+          <div class="stat-card stat-card-red">
+            <div class="stat-card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            </div>
+            <div class="stat-card-content">
+              <p class="stat-card-label">Pending Requests</p>
+              <h3 class="stat-card-value"><%= pendingRequests %></h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-grid">
+          <div class="card chart-card">
+            <div class="card-header">
+              <h2 class="card-title">Monthly Savings Trend</h2>
+            </div>
+            <div class="chart-container">
+              <canvas id="savingsChart"></canvas>
+            </div>
+          </div>
+          <div class="card chart-card">
+            <div class="card-header">
+              <h2 class="card-title">Loan Status Distribution</h2>
+            </div>
+            <div class="chart-container">
+              <canvas id="loanStatusChart"></canvas>
+            </div>
+          </div>
+          <div class="card chart-card">
+            <div class="card-header">
+              <h2 class="card-title">Monthly Repayment Collection</h2>
+            </div>
+            <div class="chart-container">
+              <canvas id="repaymentChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Quick Actions</h2>
+          </div>
+          <div class="quick-actions">
+            <a href="/admin/savings" class="quick-action">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              <span>Record Savings</span>
+            </a>
+            <a href="/admin/loans?status=requested" class="quick-action">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              <span>Review Loans</span>
+            </a>
+            <a href="/admin/repayments" class="quick-action">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              <span>Record Repayment</span>
+            </a>
+            <a href="/admin/overdue" class="quick-action">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>View Overdue</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/main.js"></script>
+  <script>
+    // Chart.js config
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const chartColors = {
+      green: 'rgba(5, 150, 105, 0.8)',
+      greenLight: 'rgba(5, 150, 105, 0.1)',
+      blue: 'rgba(59, 130, 246, 0.8)',
+      blueLight: 'rgba(59, 130, 246, 0.1)',
+      amber: 'rgba(245, 158, 11, 0.8)',
+      red: 'rgba(239, 68, 68, 0.8)',
+      purple: 'rgba(139, 92, 246, 0.8)',
+      teal: 'rgba(20, 184, 166, 0.8)',
+      gray: 'rgba(156, 163, 175, 0.8)'
+    };
+
+    // Monthly Savings
+    const savingsData = <%- monthlySavings %>;
+    if (savingsData.length > 0) {
+      new Chart(document.getElementById('savingsChart'), {
+        type: 'bar',
+        data: {
+          labels: savingsData.map(d => d._id.month ? d._id.month.substring(0, 3) + ' ' + d._id.year : ''),
+          datasets: [{
+            label: 'Savings (₹)',
+            data: savingsData.map(d => d.total),
+            backgroundColor: chartColors.green,
+            borderRadius: 6,
+            barPercentage: 0.6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    // Loan Status Distribution
+    const loanStatusData = <%- loanStatusDist %>;
+    if (loanStatusData.length > 0) {
+      const statusColors = {
+        requested: chartColors.blue,
+        pending: chartColors.amber,
+        approved: chartColors.teal,
+        rejected: chartColors.red,
+        disbursed: chartColors.purple,
+        active: chartColors.green,
+        partially_paid: chartColors.amber,
+        completed: chartColors.gray
+      };
+      new Chart(document.getElementById('loanStatusChart'), {
+        type: 'doughnut',
+        data: {
+          labels: loanStatusData.map(d => d._id.replace(/_/g, ' ')),
+          datasets: [{
+            data: loanStatusData.map(d => d.count),
+            backgroundColor: loanStatusData.map(d => statusColors[d._id] || chartColors.gray),
+            borderWidth: 2,
+            borderColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom' } }
+        }
+      });
+    }
+
+    // Monthly Repayments
+    const repaymentData = <%- monthlyRepayments %>;
+    if (repaymentData.length > 0) {
+      new Chart(document.getElementById('repaymentChart'), {
+        type: 'line',
+        data: {
+          labels: repaymentData.map(d => monthNames[d._id.month - 1] + ' ' + d._id.year),
+          datasets: [{
+            label: 'Repayments (₹)',
+            data: repaymentData.map(d => d.total),
+            borderColor: chartColors.blue,
+            backgroundColor: chartColors.blueLight,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: chartColors.blue
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

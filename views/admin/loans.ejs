@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <% const activePage = 'loans'; %>
+    <%- include('../partials/sidebar-admin') %>
+    <main class="dashboard-main">
+      <% const pageTitle = 'Loan Management'; %>
+      <%- include('../partials/dashboard-header') %>
+      <div class="dashboard-content">
+        <!-- Status Filter Tabs -->
+        <div class="filter-tabs">
+          <a href="/admin/loans" class="filter-tab <%= !filterStatus ? 'active' : '' %>">All (<%= Object.values(statusCounts).reduce((a, b) => a + b, 0) %>)</a>
+          <a href="/admin/loans?status=requested" class="filter-tab <%= filterStatus === 'requested' ? 'active' : '' %>">Requested (<%= statusCounts.requested || 0 %>)</a>
+          <a href="/admin/loans?status=approved" class="filter-tab <%= filterStatus === 'approved' ? 'active' : '' %>">Approved (<%= statusCounts.approved || 0 %>)</a>
+          <a href="/admin/loans?status=active" class="filter-tab <%= filterStatus === 'active' ? 'active' : '' %>">Active (<%= (statusCounts.active || 0) + (statusCounts.partially_paid || 0) %>)</a>
+          <a href="/admin/loans?status=completed" class="filter-tab <%= filterStatus === 'completed' ? 'active' : '' %>">Completed (<%= statusCounts.completed || 0 %>)</a>
+          <a href="/admin/loans?status=rejected" class="filter-tab <%= filterStatus === 'rejected' ? 'active' : '' %>">Rejected (<%= statusCounts.rejected || 0 %>)</a>
+        </div>
+
+        <div class="card">
+          <% if (loans.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Loan ID</th>
+                    <th>Member</th>
+                    <th>Principal</th>
+                    <th>Total Payable</th>
+                    <th>Outstanding</th>
+                    <th>Purpose</th>
+                    <th>Status</th>
+                    <th>Requested</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% loans.forEach(l => { %>
+                  <tr>
+                    <td><strong><%= l.loanId %></strong></td>
+                    <td><%= l.memberId ? l.memberId.name : '—' %></td>
+                    <td>₹<%= l.principalAmount.toLocaleString('en-IN') %></td>
+                    <td>₹<%= l.totalPayable.toLocaleString('en-IN') %></td>
+                    <td class="<%= l.outstandingBalance > 0 ? 'text-warning' : '' %>">₹<%= l.outstandingBalance.toLocaleString('en-IN') %></td>
+                    <td><%= l.purpose.charAt(0).toUpperCase() + l.purpose.slice(1) %></td>
+                    <td>
+                      <span class="badge badge-<%= l.status === 'completed' ? 'success' : l.status === 'rejected' ? 'error' : l.status === 'requested' ? 'info' : 'warning' %>">
+                        <%= l.status.replace(/_/g, ' ') %>
+                      </span>
+                    </td>
+                    <td><%= new Date(l.requestedAt).toLocaleDateString('en-IN') %></td>
+                    <td><a href="/admin/loans/<%= l._id %>" class="btn btn-outline btn-xs">View</a></td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              <p>No pending loan requests.</p>
+              <span>Loan requests from members will appear here.</span>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

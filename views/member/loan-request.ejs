@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <% const activePage = 'loans'; %>
+    <%- include('../partials/sidebar-member') %>
+    <main class="dashboard-main">
+      <% const pageTitle = 'Request Loan'; %>
+      <%- include('../partials/dashboard-header') %>
+      <div class="dashboard-content">
+        <div class="card form-card">
+          <div class="card-header">
+            <h2 class="card-title">Loan Request Form</h2>
+          </div>
+
+          <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+            <div class="alert alert-error">
+              <% errors.forEach(err => { %>
+                <p><%= err.msg %></p>
+              <% }); %>
+            </div>
+          <% } %>
+
+          <form action="/member/loans/request" method="POST" class="form-vertical" id="loan-request-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="principalAmount">Loan Amount (₹) *</label>
+                <input type="number" id="principalAmount" name="principalAmount" min="100" step="100" placeholder="e.g., 20000" value="<%= typeof body !== 'undefined' ? body.principalAmount || '' : '' %>" required>
+              </div>
+              <div class="form-group">
+                <label for="tenure">Tenure (months) *</label>
+                <input type="number" id="tenure" name="tenure" min="1" max="60" placeholder="e.g., 12" value="<%= typeof body !== 'undefined' ? body.tenure || '' : '' %>" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="purpose">Purpose *</label>
+                <select id="purpose" name="purpose" required>
+                  <option value="">Select purpose</option>
+                  <option value="education" <%= (typeof body !== 'undefined' && body.purpose === 'education') ? 'selected' : '' %>>Education</option>
+                  <option value="medical" <%= (typeof body !== 'undefined' && body.purpose === 'medical') ? 'selected' : '' %>>Medical</option>
+                  <option value="agriculture" <%= (typeof body !== 'undefined' && body.purpose === 'agriculture') ? 'selected' : '' %>>Agriculture</option>
+                  <option value="business" <%= (typeof body !== 'undefined' && body.purpose === 'business') ? 'selected' : '' %>>Business</option>
+                  <option value="household" <%= (typeof body !== 'undefined' && body.purpose === 'household') ? 'selected' : '' %>>Household</option>
+                  <option value="emergency" <%= (typeof body !== 'undefined' && body.purpose === 'emergency') ? 'selected' : '' %>>Emergency</option>
+                  <option value="other" <%= (typeof body !== 'undefined' && body.purpose === 'other') ? 'selected' : '' %>>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="interestRate">Interest Rate (% p.a.) <span class="text-muted">— optional</span></label>
+                <input type="number" id="interestRate" name="interestRate" min="0" max="36" step="0.5" placeholder="e.g., 5" value="<%= typeof body !== 'undefined' ? body.interestRate || '0' : '0' %>">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="notes">Additional Notes</label>
+              <textarea id="notes" name="notes" rows="3" placeholder="Any additional details about your loan request..."><%= typeof body !== 'undefined' ? body.notes || '' : '' %></textarea>
+            </div>
+
+            <!-- Live calculation preview -->
+            <div class="calculation-preview" id="calc-preview" style="display: none;">
+              <h3>Estimated Calculation</h3>
+              <div class="calc-grid">
+                <div class="calc-item">
+                  <span>Principal</span>
+                  <strong id="calc-principal">₹0</strong>
+                </div>
+                <div class="calc-item">
+                  <span>Interest</span>
+                  <strong id="calc-interest">₹0</strong>
+                </div>
+                <div class="calc-item">
+                  <span>Total Payable</span>
+                  <strong id="calc-total">₹0</strong>
+                </div>
+                <div class="calc-item">
+                  <span>Monthly Installment</span>
+                  <strong id="calc-emi">₹0</strong>
+                </div>
+              </div>
+              <p class="calc-disclaimer">This is a simple interest calculation for academic purposes only. Not professional financial advice.</p>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/main.js"></script>
+  <script>
+    // Live calculation
+    const principalInput = document.getElementById('principalAmount');
+    const tenureInput = document.getElementById('tenure');
+    const rateInput = document.getElementById('interestRate');
+    const preview = document.getElementById('calc-preview');
+
+    function updateCalc() {
+      const p = parseFloat(principalInput.value) || 0;
+      const t = parseInt(tenureInput.value) || 0;
+      const r = parseFloat(rateInput.value) || 0;
+
+      if (p > 0 && t > 0) {
+        preview.style.display = 'block';
+        const interest = (p * r * t) / (12 * 100);
+        const total = Math.round(p + interest);
+        const emi = Math.round(total / t);
+
+        document.getElementById('calc-principal').textContent = '₹' + p.toLocaleString('en-IN');
+        document.getElementById('calc-interest').textContent = '₹' + Math.round(interest).toLocaleString('en-IN');
+        document.getElementById('calc-total').textContent = '₹' + total.toLocaleString('en-IN');
+        document.getElementById('calc-emi').textContent = '₹' + emi.toLocaleString('en-IN');
+      } else {
+        preview.style.display = 'none';
+      }
+    }
+
+    principalInput.addEventListener('input', updateCalc);
+    tenureInput.addEventListener('input', updateCalc);
+    rateInput.addEventListener('input', updateCalc);
+    updateCalc();
+  </script>
+</body>
+</html>

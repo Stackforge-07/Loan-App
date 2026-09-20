@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <% const activePage = 'repayments'; %>
+    <%- include('../partials/sidebar-admin') %>
+    <main class="dashboard-main">
+      <% const pageTitle = 'Repayments'; %>
+      <%- include('../partials/dashboard-header') %>
+      <div class="dashboard-content">
+        <!-- Record Repayment -->
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Record Repayment</h2></div>
+          <form action="/admin/repayments" method="POST" class="form-vertical" id="repayment-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="loanId">Select Loan *</label>
+                <select id="loanId" name="loanId" required>
+                  <option value="">-- Select Active Loan --</option>
+                  <% activeLoans.forEach(l => { %>
+                    <option value="<%= l._id %>" data-member="<%= l.memberId ? l.memberId._id : '' %>" data-outstanding="<%= l.outstandingBalance %>">
+                      <%= l.loanId %> — <%= l.memberId ? l.memberId.name : 'Unknown' %> (Outstanding: ₹<%= l.outstandingBalance.toLocaleString('en-IN') %>)
+                    </option>
+                  <% }); %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="memberId">Member</label>
+                <select id="memberId" name="memberId">
+                  <option value="">Auto-selected from loan</option>
+                  <% members.forEach(m => { %>
+                    <option value="<%= m._id %>"><%= m.name %></option>
+                  <% }); %>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="amount">Amount (₹) *</label>
+                <input type="number" id="amount" name="amount" min="1" step="1" placeholder="e.g., 2000" required>
+              </div>
+              <div class="form-group">
+                <label for="paymentMethod">Payment Method *</label>
+                <select id="paymentMethod" name="paymentMethod" required>
+                  <option value="cash">Cash</option>
+                  <option value="upi">UPI</option>
+                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="cheque">Cheque</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="paymentDate">Payment Date</label>
+                <input type="date" id="paymentDate" name="paymentDate" value="<%= new Date().toISOString().split('T')[0] %>">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="notes">Notes</label>
+              <input type="text" id="notes" name="notes" placeholder="Optional notes">
+            </div>
+            <button type="submit" class="btn btn-primary">Record Repayment</button>
+          </form>
+        </div>
+
+        <!-- Repayment History -->
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Recent Repayments</h2></div>
+          <% if (repayments.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table">
+                <thead><tr><th>Date</th><th>Member</th><th>Loan</th><th>Amount</th><th>Method</th><th>Recorded By</th></tr></thead>
+                <tbody>
+                  <% repayments.forEach(r => { %>
+                  <tr>
+                    <td><%= new Date(r.paymentDate).toLocaleDateString('en-IN') %></td>
+                    <td><%= r.memberId ? r.memberId.name : '—' %></td>
+                    <td><%= r.loanId ? r.loanId.loanId : '—' %></td>
+                    <td class="text-success">₹<%= r.amount.toLocaleString('en-IN') %></td>
+                    <td><%= r.paymentMethod.replace(/_/g, ' ') %></td>
+                    <td><%= r.recordedBy ? r.recordedBy.name : '—' %></td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="empty-state"><p>No repayments recorded yet.</p></div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/main.js"></script>
+  <script>
+    // Auto-select member when loan is selected
+    document.getElementById('loanId').addEventListener('change', function() {
+      const selected = this.options[this.selectedIndex];
+      const memberId = selected.getAttribute('data-member');
+      if (memberId) {
+        document.getElementById('memberId').value = memberId;
+      }
+    });
+  </script>
+</body>
+</html>

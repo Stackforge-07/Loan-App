@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <% const activePage = 'members'; %>
+    <%- include('../partials/sidebar-admin') %>
+    <main class="dashboard-main">
+      <% const pageTitle = member.name; %>
+      <%- include('../partials/dashboard-header') %>
+      <div class="dashboard-content">
+        <a href="/admin/members" class="btn btn-outline btn-sm" style="margin-bottom: 1.5rem;">← Back to Members</a>
+
+        <div class="profile-grid">
+          <div class="card profile-card">
+            <div class="profile-avatar-large"><%= member.name.charAt(0).toUpperCase() %></div>
+            <h2><%= member.name %></h2>
+            <p class="text-muted"><%= member.email %></p>
+            <span class="badge badge-<%= member.status === 'active' ? 'success' : 'error' %>"><%= member.status %></span>
+            <div class="profile-stats" style="margin-top: 1.5rem;">
+              <div class="profile-stat">
+                <span class="profile-stat-value">₹<%= totalSavings.toLocaleString('en-IN') %></span>
+                <span class="profile-stat-label">Total Savings</span>
+              </div>
+            </div>
+            <div class="detail-list" style="margin-top: 1.5rem;">
+              <div class="detail-list-item"><span>Phone</span><strong><%= member.phone %></strong></div>
+              <div class="detail-list-item"><span>Address</span><strong><%= member.address || '—' %></strong></div>
+              <div class="detail-list-item"><span>Group</span><strong><%= member.groupId ? member.groupId.name : 'Not assigned' %></strong></div>
+              <div class="detail-list-item"><span>Joined</span><strong><%= new Date(member.joinDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) %></strong></div>
+            </div>
+          </div>
+
+          <div>
+            <!-- Recent Savings -->
+            <div class="card">
+              <div class="card-header"><h2 class="card-title">Recent Savings</h2></div>
+              <% if (savings.length > 0) { %>
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead><tr><th>Month</th><th>Amount</th><th>Balance</th><th>Date</th></tr></thead>
+                    <tbody>
+                      <% savings.forEach(s => { %>
+                      <tr>
+                        <td><%= s.month %> <%= s.year %></td>
+                        <td class="text-success">₹<%= s.amount.toLocaleString('en-IN') %></td>
+                        <td>₹<%= s.runningBalance.toLocaleString('en-IN') %></td>
+                        <td><%= new Date(s.date).toLocaleDateString('en-IN') %></td>
+                      </tr>
+                      <% }); %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } else { %>
+                <div class="empty-state"><p>No savings records.</p></div>
+              <% } %>
+            </div>
+
+            <!-- Loans -->
+            <div class="card">
+              <div class="card-header"><h2 class="card-title">Loan History</h2></div>
+              <% if (loans.length > 0) { %>
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead><tr><th>Loan ID</th><th>Amount</th><th>Outstanding</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                      <% loans.forEach(l => { %>
+                      <tr>
+                        <td><%= l.loanId %></td>
+                        <td>₹<%= l.principalAmount.toLocaleString('en-IN') %></td>
+                        <td class="<%= l.outstandingBalance > 0 ? 'text-warning' : '' %>">₹<%= l.outstandingBalance.toLocaleString('en-IN') %></td>
+                        <td><span class="badge badge-<%= l.status === 'completed' ? 'success' : l.status === 'rejected' ? 'error' : 'warning' %>"><%= l.status.replace(/_/g, ' ') %></span></td>
+                        <td><a href="/admin/loans/<%= l._id %>" class="btn btn-outline btn-xs">View</a></td>
+                      </tr>
+                      <% }); %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } else { %>
+                <div class="empty-state"><p>No loans.</p></div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

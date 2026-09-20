@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <% const activePage = 'savings'; %>
+    <%- include('../partials/sidebar-member') %>
+    <main class="dashboard-main">
+      <% const pageTitle = 'Savings Passbook'; %>
+      <%- include('../partials/dashboard-header') %>
+      <div class="dashboard-content">
+        <!-- Summary Cards -->
+        <div class="stat-grid stat-grid-2">
+          <div class="stat-card stat-card-green">
+            <div class="stat-card-content">
+              <p class="stat-card-label">Total Savings</p>
+              <h3 class="stat-card-value">₹<%= totalSavings.toLocaleString('en-IN') %></h3>
+            </div>
+          </div>
+          <div class="stat-card stat-card-blue">
+            <div class="stat-card-content">
+              <p class="stat-card-label">Monthly Average</p>
+              <h3 class="stat-card-value">₹<%= monthlyAvg.toLocaleString('en-IN') %></h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Filter Records</h2>
+          </div>
+          <form action="/member/savings" method="GET" class="filter-form">
+            <div class="filter-row">
+              <select name="month">
+                <option value="">All Months</option>
+                <% ['January','February','March','April','May','June','July','August','September','October','November','December'].forEach(m => { %>
+                  <option value="<%= m %>" <%= filterMonth === m ? 'selected' : '' %>><%= m %></option>
+                <% }); %>
+              </select>
+              <select name="year">
+                <option value="">All Years</option>
+                <% for(let y = 2026; y >= 2020; y--) { %>
+                  <option value="<%= y %>" <%= filterYear == y ? 'selected' : '' %>><%= y %></option>
+                <% } %>
+              </select>
+              <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+              <a href="/member/savings" class="btn btn-outline btn-sm">Clear</a>
+            </div>
+          </form>
+        </div>
+
+        <!-- Passbook Table -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Contribution History</h2>
+          </div>
+          <% if (savings.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>Year</th>
+                    <th>Date</th>
+                    <th>Contribution</th>
+                    <th>Running Balance</th>
+                    <th>Recorded By</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% savings.forEach(s => { %>
+                  <tr>
+                    <td><strong><%= s.month %></strong></td>
+                    <td><%= s.year %></td>
+                    <td><%= new Date(s.date).toLocaleDateString('en-IN') %></td>
+                    <td class="text-success">+₹<%= s.amount.toLocaleString('en-IN') %></td>
+                    <td><strong>₹<%= s.runningBalance.toLocaleString('en-IN') %></strong></td>
+                    <td><%= s.recordedBy ? s.recordedBy.name : '—' %></td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <p>No savings records yet.</p>
+              <span>Your monthly contributions will appear here once they're recorded.</span>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>

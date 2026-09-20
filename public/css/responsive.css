@@ -1,0 +1,145 @@
+/* ============================================
+   ArthSetu — Responsive Design
+   ============================================ */
+
+/* ---------- Tablet (max 1024px) ---------- */
+@media (max-width: 1024px) {
+  .hero-container { grid-template-columns: 1fr; text-align: center; }
+  .hero-subtitle { margin: 0 auto var(--space-8); }
+  .hero-actions { justify-content: center; }
+  .hero-visual { display: none; }
+
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .about-content { grid-template-columns: 1fr; }
+
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .chart-grid { grid-template-columns: 1fr; }
+
+  .profile-grid { grid-template-columns: 1fr; }
+  .action-cards { grid-template-columns: 1fr; }
+  .loans-grid { grid-template-columns: 1fr; }
+
+  .auth-container { grid-template-columns: 1fr; }
+  .auth-left { display: none; }
+}
+
+/* ---------- Mobile (max 768px) ---------- */
+@media (max-width: 768px) {
+  /* Sidebar */
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-close { display: block; }
+  .sidebar-toggle { display: block; }
+
+  /* Dashboard */
+  .dashboard-main { margin-left: 0; }
+  .dashboard-content { padding: var(--space-5); }
+  .dashboard-header { padding: var(--space-4) var(--space-5); }
+
+  /* Sidebar overlay */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    display: none;
+  }
+  .sidebar-overlay.show { display: block; }
+
+  /* Navbar */
+  .navbar-toggle { display: flex; }
+  .navbar-nav {
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    flex-direction: column;
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    display: none;
+  }
+  .navbar-nav.open { display: flex; }
+
+  /* Stats */
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .stat-grid-2 { grid-template-columns: 1fr; }
+  .stat-grid-3 { grid-template-columns: 1fr; }
+  .stat-card { padding: var(--space-4); }
+  .stat-card-value { font-size: var(--font-size-xl); }
+
+  /* Forms */
+  .form-row { flex-direction: column; gap: 0; }
+
+  /* Filters */
+  .filter-row { flex-direction: column; }
+  .filter-row select,
+  .filter-row input,
+  .filter-input { min-width: 100%; }
+  .filter-tabs { flex-wrap: wrap; }
+
+  /* Hero */
+  .hero { padding: 110px 0 60px; }
+  .hero-title { font-size: 2.25rem; }
+  .hero-actions { flex-direction: column; align-items: center; }
+
+  /* Sections */
+  .section { padding: 50px 0; }
+  .section-title { font-size: var(--font-size-2xl); }
+  .steps-grid { grid-template-columns: 1fr 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+
+  /* CTA */
+  .cta-card { padding: var(--space-8); }
+  .cta-card h2 { font-size: var(--font-size-2xl); }
+  .cta-actions { flex-direction: column; align-items: center; }
+
+  /* Quick Actions */
+  .quick-actions { grid-template-columns: repeat(2, 1fr); }
+
+  /* Role Selector */
+  .role-selector { flex-direction: column; }
+
+  /* Header */
+  .header-user-info { display: none; }
+
+  /* Card header */
+  .card-header-actions { flex-direction: column; gap: var(--space-3); align-items: flex-start; }
+
+  /* Toast */
+  .toast { left: 1rem; right: 1rem; max-width: 100%; }
+}
+
+/* ---------- Small Mobile (max 480px) ---------- */
+@media (max-width: 480px) {
+  .hero-title { font-size: 1.875rem; }
+  .hero { padding: 100px 0 40px; }
+
+  .stat-grid { grid-template-columns: 1fr; }
+  .steps-grid { grid-template-columns: 1fr; }
+
+  .dashboard-content { padding: var(--space-4); }
+  .card { padding: var(--space-4); }
+
+  .quick-actions { grid-template-columns: 1fr; }
+
+  .detail-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- Print ---------- */
+@media print {
+  .sidebar, .dashboard-header, .navbar, .quick-actions, .btn, .toast, .filter-form { display: none !important; }
+  .dashboard-main { margin-left: 0; }
+  .dashboard-content { padding: 0; }
+  .card { border: 1px solid #ddd; box-shadow: none; break-inside: avoid; }
+}

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <% const activePage = 'repayments'; %>
+    <%- include('../partials/sidebar-member') %>
+    <main class="dashboard-main">
+      <% const pageTitle = 'Repayments'; %>
+      <%- include('../partials/dashboard-header') %>
+      <div class="dashboard-content">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Repayment History</h2>
+          </div>
+          <% if (repayments.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Loan</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% repayments.forEach(r => { %>
+                  <tr>
+                    <td><%= new Date(r.paymentDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
+                    <td><%= r.loanId ? r.loanId.loanId : '—' %></td>
+                    <td class="text-success">₹<%= r.amount.toLocaleString('en-IN') %></td>
+                    <td><%= r.paymentMethod.replace(/_/g, ' ') %></td>
+                    <td><%= r.notes || '—' %></td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              <p>No repayments recorded.</p>
+              <span>Your repayment records will appear here.</span>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>
